@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="2026 Daily Journal - Complete journaling with mood tracking, search, tags, and more">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>2026 Daily Journal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --bg-main: #ffffff;
+            --text-main: #2d3748;
+            --text-secondary: #718096;
+            --border: #e2e8f0;
+        }
+
+        body.dark-mode {
+            --bg-main: #1a202c;
+            --text-main: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --border: #2d3748;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            padding: 1%;
+            transition: all 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-main);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 1%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            padding: 8px 0;
+            font-size: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .content {
+            padding: 1%;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .date-display {
+            background: var(--bg-main);
+            padding: 12px 1%;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .date-display h2 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .date-display p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .mood-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .mood-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-main);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .mood-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .tags-input-container {
+            margin-bottom: 16px;
+        }
+
+        .tags-display {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tag-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        .photo-upload-area {
+            margin-bottom: 16px;
+        }
+
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .photo-preview {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .photo-preview img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            flex-wrap: wrap;
+        }
+
+        .editor-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-main);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .editor-btn:hover {
+            background: var(--border);
+        }
+
+        .editor-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        textarea, .editor-content {
+            width: 100%;
+            min-height: 300px;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+            color: var(--text-main);
+            background: var(--bg-main);
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus, .editor-content:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-favorite {
+            background: #f6ad55;
+            color: white;
+        }
+
+        .btn-favorite.active {
+            background: #ed8936;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            background: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-main);
+            color: var(--text-main);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .entry-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .entry-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateX(4px);
+        }
+
+        .entry-card.favorite {
+            border-left-color: #f6ad55;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .entry-date {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .entry-mood {
+            font-size: 1.2rem;
+        }
+
+        .entry-tags {
+            display: flex;
+            gap: 4px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+        }
+
+        .entry-tag {
+            background: var(--border);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+        }
+
+        .entry-preview {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .entry-stats {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            background: var(--bg-main);
+            color: var(--text-main);
+            transition: all 0.3s;
+        }
+
+        .calendar-day:hover {
+            background: var(--border);
+        }
+
+        .calendar-day.has-entry {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-main);
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0;
+            width: auto;
+            min-width: auto;
+        }
+
+        .prompt-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .prompt-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .prompt-title {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .prompt-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .settings-label {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        .export-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .private-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 0.85rem; }
+            .subtitle { font-size: 0.7rem; }
+            textarea { min-height: 250px; font-size: 0.95rem; }
+            button { font-size: 0.85rem; padding: 12px; }
+            .tab { font-size: 0.75rem; padding: 6px 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div>
+                    <h1>2026 Daily Journal</h1>
+                    <p class="subtitle">Record thoughts and reflections</p>
+                </div>
+                <div class="header-icons">
+                    <button class="icon-btn" onclick="toggleDarkMode()" title="Dark Mode">🌙</button>
+                    <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️</button>
+                    <button class="icon-btn" onclick="openExport()" title="Export">📤</button>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-item">🔥 <span id="streak">0</span> day streak</div>
+                <div class="stat-item">📝 <span id="totalEntries">0</span> entries</div>
+                <div class="stat-item">💬 <span id="totalWords">0</span> words</div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('write')">✍️ Write</button>
+                <button class="tab" onclick="switchTab('entries')">📖 Entries</button>
+                <button class="tab" onclick="switchTab('calendar')">📅 Calendar</button>
+                <button class="tab" onclick="switchTab('stats')">📊 Stats</button>
+                <button class="tab" onclick="switchTab('prompts')">💡 Prompts</button>
+            </div>
+
+            <!-- Write Tab -->
+            <div id="writeTab" class="tab-content active">
+                <div class="date-display">
+                    <h2 id="currentDate"></h2>
+                    <p id="currentTime"></p>
+                </div>
+
+                <div class="mood-selector">
+                    <button class="mood-btn" data-mood="happy" onclick="selectMood('happy')">😊</button>
+                    <button class="mood-btn" data-mood="sad" onclick="selectMood('sad')">😢</button>
+                    <button class="mood-btn" data-mood="angry" onclick="selectMood('angry')">😠</button>
+                    <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">😰</button>
+                    <button class="mood-btn" data-mood="excited" onclick="selectMood('excited')">🤩</button>
+                    <button class="mood-btn" data-mood="calm" onclick="selectMood('calm')">😌</button>
+                    <button class="mood-btn" data-mood="grateful" onclick="selectMood('grateful')">🙏</button>
+                    <button class="mood-btn" data-mood="tired" onclick="selectMood('tired')">😴</button>
+                </div>
+
+                <div class="tags-input-container">
+                    <div class="tags-display" id="tagsDisplay"></div>
+                    <input type="text" class="tag-input" id="tagInput" placeholder="Add tags (press Enter)..." onkeypress="addTag(event)">
+                </div>
+
+                <div style="background: var(--border); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="color: var(--text-main); font-weight: 600; font-size: 0.9rem;">🔒 Private Entry</span>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">Hide from search & calendar</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="privateToggle" onchange="togglePrivate()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="photo-upload-area">
+                    <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
+                    <button onclick="document.getElementById('photoInput').click()" class="btn-save" style="width: auto; padding: 10px 20px;">📷 Add Photos</button>
+                    <div class="photo-preview-grid" id="photoPreview"></div>
+                </div>
+
+                <div class="editor-toolbar">
+                    <button class="editor-btn" onclick="formatText('bold')"><b>B</b></button>
+                    <button class="editor-btn" onclick="formatText('italic')"><i>I</i></button>
+                    <button class="editor-btn" onclick="formatText('underline')"><u>U</u></button>
+                    <button class="editor-btn" onclick="formatText('insertUnorderedList')">• List</button>
+                    <button class="editor-btn" onclick="formatText('insertOrderedList')">1. List</button>
+                </div>
+
+                <div id="editor" class="editor-content" contenteditable="true" placeholder="What's on your mind today? Write your thoughts, feelings, and reflections here..."></div>
+
+                <div class="button-group">
+                    <button class="btn-save" onclick="saveEntry()">💾 Save</button>
+                    <button class="btn-favorite" id="favoriteBtn" onclick="toggleFavorite()">⭐ Favorite</button>
+                    <button onclick="clearCurrent()" style="background: #fc8181; color: white;">🗑️ Clear</button>
+                </div>
+            </div>
+
+            <!-- Entries Tab -->
+            <div id="entriesTab" class="tab-content">
+                <input type="text" class="search-bar" id="searchBar" placeholder="🔍 Search entries..." oninput="searchEntries()">
+                
+                <div class="filter-options">
+                    <button class="filter-btn active" onclick="filterByMood('all')">All</button>
+                    <button class="filter-btn" onclick="filterByMood('favorites')">⭐ Favorites</button>
+                    <button class="filter-btn" onclick="filterByMood('private')">🔒 Private</button>
+                    <button class="filter-btn" onclick="filterByMood('happy')">😊 Happy</button>
+                    <button class="filter-btn" onclick="filterByMood('sad')">😢 Sad</button>
+                    <button class="filter-btn" onclick="filterByTag())">🏷️ By Tag</button>
+                </div>
+
+                <div id="entriesList"></div>
+            </div>
+
+            <!-- Calendar Tab -->
+            <div id="calendarTab" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <button onclick="changeMonth(-1)" class="icon-btn" style="background: var(--primary);">◀</button>
+                    <h2 id="calendarMonth" style="color: var(--text-main);"></h2>
+                    <button onclick="changeMonth(1)" class="icon-btn" style="background: var(--primary);">▶</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <!-- Stats Tab -->
+            <div id="statsTab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotalEntries">0</div>
+                        <div class="stat-label">Total Entries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotalWords">0</div>
+                        <div class="stat-label">Total Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statStreak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statAvgWords">0</div>
+                        <div class="stat-label">Avg Words/Entry</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statThisMonth">0</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statFavorites">0</div>
+                        <div class="stat-label">Favorites</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 24px; color: var(--text-main); margin-bottom: 12px;">Mood Distribution</h3>
+                <div id="moodChart" style="background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px; padding: 16px;"></div>
+            </div>
+
+            <!-- Prompts Tab -->
+            <div id="promptsTab" class="tab-content">
+                <div id="promptsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Settings</h3>
+                <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+            </div>
+            
+            <div class="settings-group">
+                <label class="settings-label">🔒 Security Settings</label>
+                <div style="background: var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="color: var(--text-main); font-size: 0.9rem;">Password Lock</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="passwordToggle" onchange="togglePasswordLock()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <input type="password" class="settings-input" id="passwordInput" placeholder="Enter password" style="display: none; margin-top: 8px;">
+                </div>
+
+                <div style="background: var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="color: var(--text-main); font-size: 0.9rem;">Biometric Lock 👆</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="biometricToggle" onchange="toggleBiometric()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary);">Use fingerprint/face ID</p>
+                </div>
+
+                <div style="background: var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="color: var(--text-main); font-size: 0.9rem;">End-to-End Encryption 🔐</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="encryptionToggle" onchange="toggleEncryption()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary);">Encrypt all entries locally</p>
+                </div>
+
+                <div style="background: var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <label style="color: var(--text-main); font-size: 0.9rem; display: block; margin-bottom: 8px;">Auto-Lock Timer ⏱️</label>
+                    <select class="settings-input" id="autoLockTimer" onchange="setAutoLock()">
+                        <option value="0">Disabled</option>
+                        <option value="1">1 minute</option>
+                        <option value="5">5 minutes</option>
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                    </select>
+                </div>
+
+                <div style="background: var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--text-main); font-size: 0.9rem;">Lock Now 🔒</span>
+                        <button onclick="lockApp()" class="filter-btn" style="background: var(--primary); color: white;">Lock</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">Daily Reminder</label>
+                <input type="time" class="settings-input" id="reminderTime">
+                <button onclick="setReminder()" class="btn-save" style="margin-top: 8px; width: 100%;">Enable Reminder</button>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">Theme</label>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="setTheme('light')" class="filter-btn">☀️ Light</button>
+                    <button onclick="setTheme('dark')" class="filter-btn">🌙 Dark</button>
+                    <button onclick="setTheme('auto')" class="filter-btn">🔄 Auto</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">🔑 Encryption Key</label>
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+                    <p style="font-size: 0.85rem; color: #856404; margin-bottom: 8px;">⚠️ Save this key! You'll need it to recover encrypted data.</p>
+                    <input type="text" class="settings-input" id="encryptionKeyDisplay" readonly style="font-family: monospace; font-size: 0.75rem;">
+                </div>
+                <button onclick="regenerateKey()" style="background: #ffc107; color: #000; width: 100%;">🔄 Generate New Key</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lock Screen -->
+    <div id="lockScreen" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 16px;">🔒</div>
+            <h2 style="color: var(--text-main); margin-bottom: 8px;">Journal Locked</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">Enter your password or use biometric authentication</p>
+            
+            <input type="password" id="unlockPasswordInput" class="settings-input" placeholder="Enter password" style="margin-bottom: 12px;" onkeypress="if(event.key==='Enter') unlockApp()">
+            
+            <div style="display: flex; gap: 8px;">
+                <button onclick="unlockApp()" class="btn-save" style="flex: 1;">🔓 Unlock</button>
+                <button onclick="unlockWithBiometric()" class="btn-save" id="biometricUnlockBtn" style="flex: 1; display: none;">👆 Biometric</button>
+            </div>
+            
+            <p style="margin-top: 16px; font-size: 0.85rem; color: var(--text-secondary);">Forgot password? Contact support or reset app data.</p>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Export & Import</h3>
+                <button class="modal-close" onclick="closeModal('exportModal')">×</button>
+            </div>
+            
+            <div class="settings-group">
+                <label class="settings-label">Export Entries</label>
+                <div class="export-options">
+                    <button onclick="exportData('json')" class="btn-save export-btn">📄 JSON</button>
+                    <button onclick="exportData('txt')" class="btn-save export-btn">📝 TXT</button>
+                    <button onclick="exportData('pdf')" class="btn-save export-btn">📕 PDF</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">Import Backup</label>
+                <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
+                <button onclick="document.getElementById('importInput').click()" class="btn-save" style="width: 100%;">📥 Import JSON</button>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">Danger Zone</label>
+                <button onclick="deleteAllData()" style="background: #e53e3e; color: white; width: 100%;">🗑️ Delete All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentMood = null;
+        let currentTags = [];
+        let currentPhotos = [];
+        let isFavorite = false;
+        let isPrivate = false;
+        let currentFilter = 'all';
+        let currentMonth = new Date();
+        let allEntries = [];
+
+        // Security state
+        let isLocked = false;
+        let encryptionEnabled = false;
+        let encryptionKey = null;
+        let autoLockTimer = null;
+        let lastActivityTime = Date.now();
+
+        // Encryption functions using Web Crypto API
+        async function generateEncryptionKey() {
+            const key = await crypto.subtle.generateKey(
+                { name: 'AES-GCM', length: 256 },
+                true,
+                ['encrypt', 'decrypt']
+            );
+            const exported = await crypto.subtle.exportKey('jwk', key);
+            return JSON.stringify(exported);
+        }
+
+        async function importEncryptionKey(keyString) {
+            const keyData = JSON.parse(keyString);
+            return await crypto.subtle.importKey(
+                'jwk',
+                keyData,
+                { name: 'AES-GCM', length: 256 },
+                true,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        async function encryptData(data, keyString) {
+            try {
+                const key = await importEncryptionKey(keyString);
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const encodedData = new TextEncoder().encode(data);
+                
+                const encryptedData = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encodedData
+                );
+                
+                const encryptedArray = new Uint8Array(encryptedData);
+                const combined = new Uint8Array(iv.length + encryptedArray.length);
+                combined.set(iv);
+                combined.set(encryptedArray, iv.length);
+                
+                return btoa(String.fromCharCode(...combined));
+            } catch (error) {
+                console.error('Encryption error:', error);
+                return null;
+            }
+        }
+
+        async function decryptData(encryptedString, keyString) {
+            try {
+                const key = await importEncryptionKey(keyString);
+                const combined = Uint8Array.from(atob(encryptedString), c => c.charCodeAt(0));
+                
+                const iv = combined.slice(0, 12);
+                const encryptedData = combined.slice(12);
+                
+                const decryptedData = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encryptedData
+                );
+                
+                return new TextDecoder().decode(decryptedData);
+            } catch (error) {
+                console.error('Decryption error:', error);
+                return null;
+            }
+        }
+
+        // Hash password using SHA-256
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hash = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        // Prompts database
+        const prompts = [
+            { title: "Gratitude", text: "What are three things you're grateful for today?" },
+            { title: "Achievement", text: "What's one thing you accomplished today that made you proud?" },
+            { title: "Growth", text: "What did you learn about yourself today?" },
+            { title: "Kindness", text: "How did you show kindness to yourself or others today?" },
+            { title: "Challenge", text: "What challenged you today, and how did you handle it?" },
+            { title: "Joy", text: "What brought you joy or made you smile today?" },
+            { title: "Connection", text: "Who did you connect with today? How did it feel?" },
+            { title: "Self-care", text: "How did you take care of yourself today?" },
+            { title: "Future", text: "What are you looking forward to?" },
+            { title: "Reflection", text: "If today was a chapter in a book, what would it be titled?" },
+            { title: "Emotions", text: "What emotions did you experience today? Why?" },
+            { title: "Creativity", text: "What's one creative thought or idea you had today?" }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Load security settings
+            loadSecuritySettings();
+            
+            // Check if app should be locked
+            if (checkIfShouldLock()) {
+                showLockScreen();
+            } else {
+                loadTodaysEntry();
+                loadAllEntries();
+                updateStats();
+                renderPrompts();
+                renderCalendar();
+            }
+            
+            // Load dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // Track user activity for auto-lock
+            document.addEventListener('click', resetActivityTimer);
+            document.addEventListener('keypress', resetActivityTimer);
+            document.addEventListener('touchstart', resetActivityTimer);
+            
+            // Check auto-lock periodically
+            setInterval(checkAutoLock, 10000); // Check every 10 seconds
+        });
+
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US');
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+
+            if (tab === 'entries') loadAllEntries();
+            if (tab === 'calendar') renderCalendar();
+            if (tab === 'stats') updateStats();
+        }
+
+        // Mood selection
+        function selectMood(mood) {
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            currentMood = mood;
+        }
+
+        // Tags
+        function addTag(event) {
+            if (event.key === 'Enter' && event.target.value.trim()) {
+                const tag = event.target.value.trim();
+                if (!currentTags.includes(tag)) {
+                    currentTags.push(tag);
+                    renderTags();
+                }
+                event.target.value = '';
+            }
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tagsDisplay');
+            container.innerHTML = currentTags.map(tag => 
+                `<span class="tag">${tag}<span class="tag-remove" onclick="removeTag('${tag}')">×</span></span>`
+            ).join('');
+        }
+
+        function removeTag(tag) {
+            currentTags = currentTags.filter(t => t !== tag);
+            renderTags();
+        }
+
+        // Photos
+        function handlePhotoUpload(event) {
+            const files = Array.from(event.target.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentPhotos.push(e.target.result);
+                    renderPhotos();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderPhotos() {
+            const container = document.getElementById('photoPreview');
+            container.innerHTML = currentPhotos.map((photo, index) => `
+                <div class="photo-preview">
+                    <img src="${photo}" alt="Photo ${index + 1}">
+                    <button class="photo-remove" onclick="removePhoto(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removePhoto(index) {
+            currentPhotos.splice(index, 1);
+            renderPhotos();
+        }
+
+        // Rich text formatting
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('editor').focus();
+        }
+
+        // Favorite toggle
+        function toggleFavorite() {
+            isFavorite = !isFavorite;
+            const btn = document.getElementById('favoriteBtn');
+            btn.classList.toggle('active');
+            btn.textContent = isFavorite ? '⭐ Favorited' : '⭐ Favorite';
+        }
+
+        // Save entry
+        async function saveEntry() {
+            const content = document.getElementById('editor').innerHTML.trim();
+            if (!content) {
+                alert('Please write something before saving!');
+                return;
+            }
+
+            const now = new Date();
+            const dateKey = now.toISOString().split('T')[0];
+            const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w).length;
+            
+            let entry = {
+                date: dateKey,
+                timestamp: now.toISOString(),
+                content: content,
+                mood: currentMood,
+                tags: currentTags,
+                photos: currentPhotos,
+                favorite: isFavorite,
+                private: isPrivate,
+                wordCount: wordCount,
+                encrypted: false
+            };
+
+            // Encrypt if enabled
+            if (encryptionEnabled && encryptionKey) {
+                try {
+                    const entryString = JSON.stringify(entry);
+                    const encrypted = await encryptData(entryString, encryptionKey);
+                    
+                    if (encrypted) {
+                        entry = {
+                            date: dateKey,
+                            timestamp: now.toISOString(),
+                            encrypted: true,
+                            data: encrypted,
+                            private: isPrivate
+                        };
+                    } else {
+                        alert('Encryption failed! Entry will be saved unencrypted.');
+                    }
+                } catch (error) {
+                    console.error('Encryption error:', error);
+                    alert('Encryption failed! Entry will be saved unencrypted.');
+                }
+            }
+
+            try {
+                const result = await window.storage.set(`journal:${dateKey}`, JSON.stringify(entry));
+                if (result) {
+                    alert('✅ Entry saved successfully!' + (entry.encrypted ? ' (Encrypted)' : ''));
+                    loadAllEntries();
+                    updateStats();
+                }
+            } catch (error) {
+                alert('Error saving entry: ' + error.message);
+            }
+        }
+
+        // Load today's entry
+        async function loadTodaysEntry() {
+            const dateKey = new Date().toISOString().split('T')[0];
+            try {
+                const result = await window.storage.get(`journal:${dateKey}`);
+                if (result && result.value) {
+                    let entry = JSON.parse(result.value);
+                    
+                    // Decrypt if encrypted
+                    if (entry.encrypted && encryptionKey) {
+                        try {
+                            const decrypted = await decryptData(entry.data, encryptionKey);
+                            if (decrypted) {
+                                entry = JSON.parse(decrypted);
+                            } else {
+                                alert('Failed to decrypt entry. Check your encryption key.');
+                                return;
+                            }
+                        } catch (error) {
+                            alert('Decryption failed. Entry may be corrupted or key is wrong.');
+                            return;
+                        }
+                    }
+                    
+                    document.getElementById('editor').innerHTML = entry.content;
+                    currentMood = entry.mood;
+                    currentTags = entry.tags || [];
+                    currentPhotos = entry.photos || [];
+                    isFavorite = entry.favorite || false;
+                    isPrivate = entry.private || false;
+                    
+                    if (currentMood) {
+                        document.querySelector(`[data-mood="${currentMood}"]`)?.classList.add('selected');
+                    }
+                    renderTags();
+                    renderPhotos();
+                    if (isFavorite) {
+                        document.getElementById('favoriteBtn').classList.add('active');
+                        document.getElementById('favoriteBtn').textContent = '⭐ Favorited';
+                    }
+                    if (isPrivate) {
+                        document.getElementById('privateToggle').checked = true;
+                    }
+                }
+            } catch (error) {
+                console.log('No entry for today yet');
+            }
+        }
+
+        // Load all entries
+        async function loadAllEntries() {
+            try {
+                const result = await window.storage.list('journal:');
+                const entriesList = document.getElementById('entriesList');
+                
+                if (!result || !result.keys || result.keys.length === 0) {
+                    entriesList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 32px;">No entries yet. Start writing!</p>';
+                    allEntries = [];
+                    return;
+                }
+
+                allEntries = [];
+                for (const key of result.keys) {
+                    try {
+                        const entryResult = await window.storage.get(key);
+                        if (entryResult && entryResult.value) {
+                            let entry = JSON.parse(entryResult.value);
+                            
+                            // Decrypt if encrypted
+                            if (entry.encrypted && encryptionKey) {
+                                try {
+                                    const decrypted = await decryptData(entry.data, encryptionKey);
+                                    if (decrypted) {
+                                        entry = JSON.parse(decrypted);
+                                    } else {
+                                        // Skip encrypted entries if can't decrypt
+                                        console.log('Skipping encrypted entry - no key');
+                                        continue;
+                                    }
+                                } catch (error) {
+                                    console.error('Decryption error:', error);
+                                    continue;
+                                }
+                            }
+                            
+                            allEntries.push(entry);
+                        }
+                    } catch (e) {
+                        console.error('Error loading entry:', e);
+                    }
+                }
+
+                allEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                renderEntries(allEntries);
+            } catch (error) {
+                document.getElementById('entriesList').innerHTML = '<p>Error loading entries.</p>';
+            }
+        }
+
+        // Render entries
+        function renderEntries(entries) {
+            const container = document.getElementById('entriesList');
+            
+            // Filter out private entries unless showing all
+            const showPrivate = currentFilter === 'all' || currentFilter === 'private';
+            const filteredEntries = showPrivate ? entries : entries.filter(e => !e.private);
+            
+            if (filteredEntries.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 32px;">No entries found.</p>';
+                return;
+            }
+
+            container.innerHTML = filteredEntries.map(entry => {
+                const date = new Date(entry.timestamp);
+                const preview = entry.content.replace(/<[^>]*>/g, '').substring(0, 150);
+                const moodEmoji = getMoodEmoji(entry.mood);
+                
+                return `
+                    <div class="entry-card ${entry.favorite ? 'favorite' : ''}" onclick="viewEntry('${entry.date}')">
+                        <div class="entry-header">
+                            <div class="entry-date">${date.toLocaleDateString('en-US', { 
+                                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
+                            })}</div>
+                            <div>
+                                ${entry.private ? '<span class="private-badge">🔒 Private</span>' : ''}
+                                ${entry.favorite ? '⭐' : ''} ${moodEmoji}
+                            </div>
+                        </div>
+                        ${entry.tags && entry.tags.length > 0 ? `
+                            <div class="entry-tags">
+                                ${entry.tags.map(tag => `<span class="entry-tag">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="entry-preview">${preview}...</div>
+                        <div class="entry-stats">
+                            <span>💬 ${entry.wordCount} words</span>
+                            ${entry.photos && entry.photos.length > 0 ? `<span>📷 ${entry.photos.length} photos</span>` : ''}
+                            ${entry.encrypted ? '<span>🔐 Encrypted</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getMoodEmoji(mood) {
+            const moods = {
+                happy: '😊', sad: '😢', angry: '😠', anxious: '😰',
+                excited: '🤩', calm: '😌', grateful: '🙏', tired: '😴'
+            };
+            return moods[mood] || '😐';
+        }
+
+        // View entry
+        async function viewEntry(dateKey) {
+            try {
+                const result = await window.storage.get(`journal:${dateKey}`);
+                if (result && result.value) {
+                    let entry = JSON.parse(result.value);
+                    
+                    // Decrypt if encrypted
+                    if (entry.encrypted && encryptionKey) {
+                        try {
+                            const decrypted = await decryptData(entry.data, encryptionKey);
+                            if (decrypted) {
+                                entry = JSON.parse(decrypted);
+                            } else {
+                                alert('Cannot decrypt this entry. Check your encryption key.');
+                                return;
+                            }
+                        } catch (error) {
+                            alert('Decryption failed. Entry may be corrupted.');
+                            return;
+                        }
+                    }
+                    
+                    document.getElementById('editor').innerHTML = entry.content;
+                    currentMood = entry.mood;
+                    currentTags = entry.tags || [];
+                    currentPhotos = entry.photos || [];
+                    isFavorite = entry.favorite || false;
+                    isPrivate = entry.private || false;
+                    
+                    if (currentMood) {
+                        document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+                        document.querySelector(`[data-mood="${currentMood}"]`)?.classList.add('selected');
+                    }
+                    renderTags();
+                    renderPhotos();
+                    
+                    const favBtn = document.getElementById('favoriteBtn');
+                    if (isFavorite) {
+                        favBtn.classList.add('active');
+                        favBtn.textContent = '⭐ Favorited';
+                    } else {
+                        favBtn.classList.remove('active');
+                        favBtn.textContent = '⭐ Favorite';
+                    }
+                    
+                    document.getElementById('privateToggle').checked = isPrivate;
+                    
+                    switchTab('write');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (error) {
+                alert('Error loading entry');
+            }
+        }
+
+        // Search entries
+        function searchEntries() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = allEntries.filter(entry => {
+                const content = entry.content.replace(/<[^>]*>/g, '').toLowerCase();
+                const tags = (entry.tags || []).join(' ').toLowerCase();
+                return content.includes(query) || tags.includes(query);
+            });
+            renderEntries(filtered);
+        }
+
+        // Filter by mood
+        function filterByMood(mood) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            currentFilter = mood;
+
+            let filtered = allEntries;
+            if (mood === 'favorites') {
+                filtered = allEntries.filter(e => e.favorite);
+            } else if (mood === 'private') {
+                filtered = allEntries.filter(e => e.private);
+            } else if (mood !== 'all') {
+                filtered = allEntries.filter(e => e.mood === mood);
+            }
+            renderEntries(filtered);
+        }
+
+        // Calendar
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+            document.getElementById('calendarMonth').textContent = 
+                currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date().toISOString().split('T')[0];
+            
+            const grid = document.getElementById('calendarGrid');
+            let html = '';
+            
+            // Day headers
+            ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(day => {
+                html += `<div style="font-weight: 600; color: var(--text-secondary); text-align: center;">${day}</div>`;
+            });
+            
+            // Empty cells
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div></div>';
+            }
+            
+            // Days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasEntry = allEntries.some(e => e.date === dateKey);
+                const isToday = dateKey === today;
+                
+                html += `
+                    <div class="calendar-day ${hasEntry ? 'has-entry' : ''} ${isToday ? 'today' : ''}" 
+                         onclick="viewCalendarDay('${dateKey}')">
+                        ${day}
+                    </div>
+                `;
+            }
+            
+            grid.innerHTML = html;
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function viewCalendarDay(dateKey) {
+            const entry = allEntries.find(e => e.date === dateKey);
+            if (entry) {
+                viewEntry(dateKey);
+            }
+        }
+
+        // Statistics
+        async function updateStats() {
+            const totalEntries = allEntries.length;
+            const totalWords = allEntries.reduce((sum, e) => sum + (e.wordCount || 0), 0);
+            const avgWords = totalEntries > 0 ? Math.round(totalWords / totalEntries) : 0;
+            
+            // Calculate streak
+            let streak = 0;
+            const today = new Date();
+            let checkDate = new Date(today);
+            
+            while (true) {
+                const dateKey = checkDate.toISOString().split('T')[0];
+                if (allEntries.some(e => e.date === dateKey)) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            
+            // This month count
+            const thisMonth = allEntries.filter(e => {
+                const entryDate = new Date(e.date);
+                return entryDate.getMonth() === today.getMonth() && 
+                       entryDate.getFullYear() === today.getFullYear();
+            }).length;
+            
+            const favorites = allEntries.filter(e => e.favorite).length;
+            
+            // Update header stats
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('totalEntries').textContent = totalEntries;
+            document.getElementById('totalWords').textContent = totalWords;
+            
+            // Update stats tab
+            document.getElementById('statTotalEntries').textContent = totalEntries;
+            document.getElementById('statTotalWords').textContent = totalWords;
+            document.getElementById('statStreak').textContent = streak;
+            document.getElementById('statAvgWords').textContent = avgWords;
+            document.getElementById('statThisMonth').textContent = thisMonth;
+            document.getElementById('statFavorites').textContent = favorites;
+            
+            // Mood chart
+            const moodCounts = {};
+            allEntries.forEach(e => {
+                if (e.mood) {
+                    moodCounts[e.mood] = (moodCounts[e.mood] || 0) + 1;
+                }
+            });
+            
+            const chartHtml = Object.entries(moodCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([mood, count]) => {
+                    const percentage = Math.round((count / totalEntries) * 100);
+                    return `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>${getMoodEmoji(mood)} ${mood}</span>
+                                <span>${count} (${percentage}%)</span>
+                            </div>
+                            <div style="background: var(--border); height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: var(--primary); height: 100%; width: ${percentage}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            
+            document.getElementById('moodChart').innerHTML = chartHtml || '<p style="color: var(--text-secondary);">No mood data yet</p>';
+        }
+
+        // Prompts
+        function renderPrompts() {
+            const container = document.getElementById('promptsList');
+            container.innerHTML = prompts.map(prompt => `
+                <div class="prompt-card" onclick="usePrompt('${prompt.text}')">
+                    <div class="prompt-title">${prompt.title}</div>
+                    <div class="prompt-text">${prompt.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function usePrompt(text) {
+            document.getElementById('editor').innerHTML = `<p><strong>Prompt: ${text}</strong></p><p><br></p>`;
+            switchTab('write');
+            document.getElementById('editor').focus();
+        }
+
+        // Dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else if (theme === 'light') {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                // Auto - based on system
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+        }
+
+        // Password protection
+        function loadSecuritySettings() {
+            // Load password lock status
+            const passwordEnabled = localStorage.getItem('passwordEnabled') === 'true';
+            document.getElementById('passwordToggle').checked = passwordEnabled;
+            if (passwordEnabled) {
+                document.getElementById('passwordInput').style.display = 'block';
+            }
+
+            // Load biometric status
+            const biometricEnabled = localStorage.getItem('biometricEnabled') === 'true';
+            document.getElementById('biometricToggle').checked = biometricEnabled;
+            
+            // Load encryption status
+            encryptionEnabled = localStorage.getItem('encryptionEnabled') === 'true';
+            document.getElementById('encryptionToggle').checked = encryptionEnabled;
+            
+            // Load or generate encryption key
+            encryptionKey = localStorage.getItem('encryptionKey');
+            if (!encryptionKey && encryptionEnabled) {
+                regenerateKey();
+            } else if (encryptionKey) {
+                document.getElementById('encryptionKeyDisplay').value = encryptionKey.substring(0, 50) + '...';
+            }
+
+            // Load auto-lock setting
+            const autoLockMinutes = localStorage.getItem('autoLockMinutes') || '0';
+            document.getElementById('autoLockTimer').value = autoLockMinutes;
+        }
+
+        function checkIfShouldLock() {
+            const passwordEnabled = localStorage.getItem('passwordEnabled') === 'true';
+            const biometricEnabled = localStorage.getItem('biometricEnabled') === 'true';
+            return passwordEnabled || biometricEnabled;
+        }
+
+        async function togglePasswordLock() {
+            const isEnabled = document.getElementById('passwordToggle').checked;
+            const input = document.getElementById('passwordInput');
+            
+            if (isEnabled) {
+                input.style.display = 'block';
+                input.focus();
+                const password = prompt('Set your password:');
+                if (password && password.length >= 4) {
+                    const hashedPassword = await hashPassword(password);
+                    localStorage.setItem('journalPassword', hashedPassword);
+                    localStorage.setItem('passwordEnabled', 'true');
+                    alert('✅ Password lock enabled!');
+                } else {
+                    alert('Password must be at least 4 characters');
+                    document.getElementById('passwordToggle').checked = false;
+                    input.style.display = 'none';
+                }
+            } else {
+                const password = prompt('Enter current password to disable:');
+                if (password) {
+                    const hashedInput = await hashPassword(password);
+                    const savedHash = localStorage.getItem('journalPassword');
+                    if (hashedInput === savedHash) {
+                        localStorage.removeItem('journalPassword');
+                        localStorage.setItem('passwordEnabled', 'false');
+                        input.style.display = 'none';
+                        alert('Password lock disabled');
+                    } else {
+                        alert('Incorrect password');
+                        document.getElementById('passwordToggle').checked = true;
+                    }
+                }
+            }
+        }
+
+        async function toggleBiometric() {
+            const isEnabled = document.getElementById('biometricToggle').checked;
+            
+            if (isEnabled) {
+                // Check if biometric is available
+                if (!window.PublicKeyCredential) {
+                    alert('Biometric authentication not supported on this device');
+                    document.getElementById('biometricToggle').checked = false;
+                    return;
+                }
+
+                try {
+                    // Request biometric authentication
+                    const credential = await navigator.credentials.create({
+                        publicKey: {
+                            challenge: new Uint8Array(32),
+                            rp: { name: "Daily Journal" },
+                            user: {
+                                id: new Uint8Array(16),
+                                name: "user@journal.app",
+                                displayName: "Journal User"
+                            },
+                            pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                            authenticatorSelection: {
+                                authenticatorAttachment: "platform",
+                                userVerification: "required"
+                            },
+                            timeout: 60000
+                        }
+                    });
+
+                    if (credential) {
+                        localStorage.setItem('biometricEnabled', 'true');
+                        localStorage.setItem('biometricCredential', JSON.stringify(credential.id));
+                        alert('✅ Biometric lock enabled!');
+                        document.getElementById('biometricUnlockBtn').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Biometric setup error:', error);
+                    alert('Biometric setup failed. Try using password lock instead.');
+                    document.getElementById('biometricToggle').checked = false;
+                }
+            } else {
+                localStorage.setItem('biometricEnabled', 'false');
+                localStorage.removeItem('biometricCredential');
+                document.getElementById('biometricUnlockBtn').style.display = 'none';
+                alert('Biometric lock disabled');
+            }
+        }
+
+        async function toggleEncryption() {
+            const isEnabled = document.getElementById('encryptionToggle').checked;
+            
+            if (isEnabled) {
+                if (!encryptionKey) {
+                    await regenerateKey();
+                }
+                encryptionEnabled = true;
+                localStorage.setItem('encryptionEnabled', 'true');
+                alert('✅ Encryption enabled! Save your encryption key securely.');
+            } else {
+                if (confirm('Disable encryption? This will decrypt all entries. Continue?')) {
+                    encryptionEnabled = false;
+                    localStorage.setItem('encryptionEnabled', 'false');
+                    alert('Encryption disabled');
+                } else {
+                    document.getElementById('encryptionToggle').checked = true;
+                }
+            }
+        }
+
+        async function regenerateKey() {
+            if (encryptionEnabled && allEntries.length > 0) {
+                if (!confirm('This will generate a new key. Your old entries may become inaccessible. Continue?')) {
+                    return;
+                }
+            }
+            
+            encryptionKey = await generateEncryptionKey();
+            localStorage.setItem('encryptionKey', encryptionKey);
+            document.getElementById('encryptionKeyDisplay').value = encryptionKey.substring(0, 50) + '...';
+            alert('New encryption key generated! Save it securely.');
+        }
+
+        function setAutoLock() {
+            const minutes = parseInt(document.getElementById('autoLockTimer').value);
+            localStorage.setItem('autoLockMinutes', minutes);
+            
+            if (minutes > 0) {
+                alert(`Auto-lock set to ${minutes} minute(s)`);
+            } else {
+                alert('Auto-lock disabled');
+            }
+        }
+
+        function resetActivityTimer() {
+            lastActivityTime = Date.now();
+        }
+
+        function checkAutoLock() {
+            const autoLockMinutes = parseInt(localStorage.getItem('autoLockMinutes') || '0');
+            if (autoLockMinutes === 0) return;
+            
+            const inactiveMinutes = (Date.now() - lastActivityTime) / 1000 / 60;
+            if (inactiveMinutes >= autoLockMinutes && !isLocked) {
+                lockApp();
+            }
+        }
+
+        function lockApp() {
+            isLocked = true;
+            showLockScreen();
+        }
+
+        function showLockScreen() {
+            document.getElementById('lockScreen').style.display = 'flex';
+            document.querySelector('.container').style.filter = 'blur(10px)';
+            
+            const biometricEnabled = localStorage.getItem('biometricEnabled') === 'true';
+            if (biometricEnabled) {
+                document.getElementById('biometricUnlockBtn').style.display = 'block';
+            }
+        }
+
+        async function unlockApp() {
+            const input = document.getElementById('unlockPasswordInput').value;
+            const hashedInput = await hashPassword(input);
+            const savedHash = localStorage.getItem('journalPassword');
+            
+            if (hashedInput === savedHash) {
+                hideLockScreen();
+            } else {
+                alert('❌ Incorrect password');
+                document.getElementById('unlockPasswordInput').value = '';
+            }
+        }
+
+        async function unlockWithBiometric() {
+            try {
+                const credential = await navigator.credentials.get({
+                    publicKey: {
+                        challenge: new Uint8Array(32),
+                        timeout: 60000,
+                        userVerification: "required"
+                    }
+                });
+                
+                if (credential) {
+                    hideLockScreen();
+                }
+            } catch (error) {
+                alert('Biometric authentication failed');
+            }
+        }
+
+        function hideLockScreen() {
+            isLocked = false;
+            document.getElementById('lockScreen').style.display = 'none';
+            document.querySelector('.container').style.filter = 'none';
+            document.getElementById('unlockPasswordInput').value = '';
+            resetActivityTimer();
+        }
+
+        function togglePrivate() {
+            isPrivate = document.getElementById('privateToggle').checked;
+        }
+
+        // Reminders
+        function setReminder() {
+            const time = document.getElementById('reminderTime').value;
+            if (time && 'Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        localStorage.setItem('reminderTime', time);
+                        alert('Reminder set for ' + time);
+                        scheduleReminder(time);
+                    }
+                });
+            }
+        }
+
+        function scheduleReminder(time) {
+            // This would need a service worker for real implementation
+            console.log('Reminder scheduled for', time);
+        }
+
+        // Export/Import
+        async function exportData(format) {
+            try {
+                const result = await window.storage.list('journal:');
+                const entries = [];
+                
+                for (const key of result.keys) {
+                    const entryResult = await window.storage.get(key);
+                    if (entryResult && entryResult.value) {
+                        entries.push(JSON.parse(entryResult.value));
+                    }
+                }
+
+                if (format === 'json') {
+                    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+                    downloadFile(blob, 'journal-backup.json');
+                } else if (format === 'txt') {
+                    const text = entries.map(e => {
+                        const date = new Date(e.timestamp).toLocaleDateString();
+                        const content = e.content.replace(/<[^>]*>/g, '');
+                        return `Date: ${date}\nMood: ${e.mood || 'N/A'}\nTags: ${(e.tags || []).join(', ')}\n\n${content}\n\n${'='.repeat(50)}\n\n`;
+                    }).join('');
+                    const blob = new Blob([text], { type: 'text/plain' });
+                    downloadFile(blob, 'journal-export.txt');
+                } else if (format === 'pdf') {
+                    alert('PDF export coming soon! Use TXT for now.');
+                }
+            } catch (error) {
+                alert('Export failed: ' + error.message);
+            }
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const entries = JSON.parse(e.target.result);
+                    for (const entry of entries) {
+                        await window.storage.set(`journal:${entry.date}`, JSON.stringify(entry));
+                    }
+                    alert(`Imported ${entries.length} entries successfully!`);
+                    loadAllEntries();
+                    updateStats();
+                } catch (error) {
+                    alert('Import failed: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function deleteAllData() {
+            if (!confirm('Are you sure? This will delete ALL your journal entries permanently!')) return;
+            if (!confirm('This action cannot be undone. Delete everything?')) return;
+
+            try {
+                const result = await window.storage.list('journal:');
+                for (const key of result.keys) {
+                    await window.storage.delete(key);
+                }
+                alert('All data deleted.');
+                loadAllEntries();
+                updateStats();
+                clearCurrent();
+            } catch (error) {
+                alert('Delete failed: ' + error.message);
+            }
+        }
+
+        // Clear current
+        function clearCurrent() {
+            if (confirm('Clear current entry? (Unsaved changes will be lost)')) {
+                document.getElementById('editor').innerHTML = '';
+                currentMood = null;
+                currentTags = [];
+                currentPhotos = [];
+                isFavorite = false;
+                isPrivate = false;
+                document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+                renderTags();
+                renderPhotos();
+                document.getElementById('favoriteBtn').classList.remove('active');
+                document.getElementById('favoriteBtn').textContent = '⭐ Favorite';
+                document.getElementById('privateToggle').checked = false;
+            }
+        }
+
+        // Modal functions
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function openExport() {
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => console.log('SW registered:', registration.scope))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallPrompt();
+        });
+
+        function showInstallPrompt() {
+            const banner = document.createElement('div');
+            banner.style.cssText = `
+                position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white; padding: 16px 24px; border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 1000;
+                max-width: 90%; text-align: center; font-size: 0.9rem;
+            `;
+            banner.innerHTML = `
+                <div style="margin-bottom: 8px;">📱 Install Daily Journal App</div>
+                <button onclick="installPWA()" style="background: white; color: #667eea; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 8px;">Install</button>
+                <button onclick="dismissInstall()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer;">Later</button>
+            `;
+            banner.id = 'installBanner';
+            document.body.appendChild(banner);
+        }
+
+        function installPWA() {
+            const banner = document.getElementById('installBanner');
+            if (banner) banner.remove();
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(result => {
+                    if (result.outcome === 'accepted') console.log('User accepted install');
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        function dismissInstall() {
+            const banner = document.getElementById('installBanner');
+            if (banner) banner.remove();
+        }
+    </script>
+</body>
+</html>
